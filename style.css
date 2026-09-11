@@ -428,3 +428,23 @@ body.modal-open .snow{display:none}
 }
 @media (prefers-reduced-motion:reduce){.zoom-tip{animation:none}}
 @media (max-width:900px){.zoom-tip{display:none}}
+
+/* ---------- editor de premios ---------- */
+.edit-box{width:min(80rem,100%);text-align:left}
+.edit-box h2{text-align:center;font-size:2rem;margin-bottom:1rem}
+.edit-ayuda{font-size:1.05rem;line-height:1.6;color:#d6b49b;margin:0 0 1rem}
+.edit-ayuda code{
+  background:rgba(0,0,0,.4);padding:.1rem .4rem;border-radius:.3rem;
+  color:var(--oro-claro);font-size:.95em;
+}
+#editText{
+  width:100%;height:26rem;resize:vertical;
+  font-family:ui-monospace,Consolas,monospace;font-size:1.05rem;line-height:1.7;
+  padding:1rem;border-radius:.7rem;
+  background:rgba(0,0,0,.42);color:var(--crema);
+  border:2px solid rgba(233,185,73,.45);
+}
+#editText:focus{outline:2px solid var(--oro);outline-offset:2px}
+.edit-error{min-height:1.6rem;margin:.6rem 0 .8rem;color:#ff9d8f;font-size:1.05rem;font-weight:700}
+.edit-btns{display:flex;gap:.8rem;justify-content:center;flex-wrap:wrap}
+.edit-btns .btn-main{font-size:1.15rem;padding:.9rem 2rem}

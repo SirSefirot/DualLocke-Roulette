@@ -29,6 +29,7 @@
     </div>
     <button id="mute" class="btn-ghost sm" title="Silenciar" aria-pressed="false">🔊</button>
     <button id="help" class="btn-ghost sm" title="Qué hace cada premio">❓</button>
+    <button id="edit" class="btn-ghost sm" title="Editar los premios">✏️</button>
   </div>
 
   <div class="turn" id="turn">
@@ -62,6 +63,25 @@
 </section>
 
 <main class="wheels" id="wheels" hidden></main>
+
+<!-- Editor de premios -->
+<div class="modal" id="editModal" hidden>
+  <div class="modal-box edit-box">
+    <h2>Editar los premios</h2>
+    <p class="edit-ayuda">
+      Un premio por línea. Las líneas que empiezan por <code>#</code> abren un tier.<br>
+      Formato: <code>Nombre | icono | explicación</code> &nbsp;(el icono y la explicación se pueden dejar vacíos)<br>
+      El total de premios debe ser múltiplo de 3, para poder repartirlos en las tres ruletas.
+    </p>
+    <textarea id="editText" spellcheck="false"></textarea>
+    <p class="edit-error" id="editError"></p>
+    <div class="edit-btns">
+      <button id="editSave" class="btn-main">Guardar</button>
+      <button id="editReset" class="btn-ghost">Restaurar originales</button>
+      <button id="editCancel" class="btn-ghost">Cancelar</button>
+    </div>
+  </div>
+</div>
 
 <!-- Explicación de los premios -->
 <div class="modal" id="helpModal" hidden>

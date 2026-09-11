@@ -12,7 +12,7 @@ const TIERS = {
 };
 
 // Los 18 premios. "corto" es lo que cabe dentro del gajo de la ruleta.
-const RECOMPENSAS = [
+let RECOMPENSAS = [
   { tier: "jackpot", nombre: "JACKPOT",                              corto: "JACKPOT",     icono: "🎰",
     nota: "Eliges entre un Reroll o abrir el Huevo JACKPOT, del que sale un Ultraente o un Pokémon Paradoja al azar." },
 
@@ -58,6 +58,8 @@ const RECOMPENSAS = [
 
 
 // Orden de importancia para la lista resumen de cada ruleta.
+const RECOMPENSAS_ORIGINALES = RECOMPENSAS;
+
 const ORDEN_TIER = ["jackpot", "master", "ultra", "super", "poke", "nada"];
 
 // ---------------------------------------------------------------
@@ -612,6 +614,122 @@ document.getElementById("help").addEventListener("click", () => {
 });
 document.getElementById("helpClose").addEventListener("click", () => { audio.clic(); $help.hidden = true; });
 $help.addEventListener("click", e => { if (e.target === $help) $help.hidden = true; });
+
+/* ============================================================
+   Editor de premios
+   ============================================================ */
+const $edit     = document.getElementById("editModal");
+const $editText = document.getElementById("editText");
+const $editErr  = document.getElementById("editError");
+const CLAVE_GUARDADO = "dualocke-premios";
+
+// Abrevia el nombre para que quepa dentro del gajo de la ruleta
+function abreviar(nombre) {
+  if (nombre.length <= 13) return nombre;
+  const palabras = nombre.split(" ");
+  let corto = "";
+  for (const p of palabras) {
+    if ((corto + " " + p).trim().length > 12) break;
+    corto = (corto + " " + p).trim();
+  }
+  return (corto || nombre.slice(0, 11)) + ".";
+}
+
+function premiosATexto(lista) {
+  return ORDEN_TIER.map(clave => {
+    const t = TIERS[clave];
+    const suyos = lista.filter(p => p.tier === clave);
+    return `# ${t.nombre.toUpperCase()}\n` +
+      suyos.map(p => `${p.nombre} | ${p.icono || ""} | ${p.nota || ""}`).join("\n");
+  }).join("\n\n");
+}
+
+function textoAPremios(texto) {
+  const porNombre = {};
+  ORDEN_TIER.forEach(c => porNombre[TIERS[c].nombre.toUpperCase()] = c);
+
+  const lista = [];
+  let actual = null;
+
+  texto.split("\n").forEach((linea, n) => {
+    const l = linea.trim();
+    if (!l) return;
+
+    if (l.startsWith("#")) {
+      const nombre = l.slice(1).trim().toUpperCase();
+      if (!porNombre[nombre]) {
+        throw new Error(`Línea ${n + 1}: el tier "${l.slice(1).trim()}" no existe. ` +
+          `Los válidos son: ${Object.keys(porNombre).join(", ")}.`);
+      }
+      actual = porNombre[nombre];
+      return;
+    }
+
+    if (!actual) throw new Error(`Línea ${n + 1}: hay un premio antes del primer tier.`);
+
+    const partes = l.split("|").map(x => x.trim());
+    if (!partes[0]) throw new Error(`Línea ${n + 1}: el premio no tiene nombre.`);
+
+    lista.push({
+      tier: actual,
+      nombre: partes[0],
+      corto: abreviar(partes[0]),
+      icono: partes[1] || "🎁",
+      nota: partes[2] || ""
+    });
+  });
+
+  if (lista.length < 3 || lista.length % 3 !== 0) {
+    throw new Error(`Hay ${lista.length} premios. Tiene que ser un múltiplo de 3 ` +
+      `(por ejemplo 15, 18 o 21) para repartirlos en las tres ruletas.`);
+  }
+  return lista;
+}
+
+function aplicarPremios(lista) {
+  RECOMPENSAS = lista;
+  pintarCatalogo();
+}
+
+// Al arrancar, recupera los premios guardados en este navegador
+try {
+  const guardado = localStorage.getItem(CLAVE_GUARDADO);
+  if (guardado) aplicarPremios(JSON.parse(guardado));
+} catch (e) { /* si falla, se usan los originales */ }
+
+document.getElementById("edit").addEventListener("click", () => {
+  audio.clic();
+  $editText.value = premiosATexto(RECOMPENSAS);
+  $editErr.textContent = "";
+  $edit.hidden = false;
+});
+
+document.getElementById("editSave").addEventListener("click", () => {
+  try {
+    const lista = textoAPremios($editText.value);
+    aplicarPremios(lista);
+    try { localStorage.setItem(CLAVE_GUARDADO, JSON.stringify(lista)); } catch (e) {}
+    audio.fin();
+    $edit.hidden = true;
+    fase = "inicio";
+    $wheels.hidden = true;
+    $results.hidden = true;
+    $lobby.hidden = false;
+    mensaje(REGLAS);
+  } catch (err) {
+    audio.nada();
+    $editErr.textContent = err.message;
+  }
+});
+
+document.getElementById("editReset").addEventListener("click", () => {
+  audio.clic();
+  $editText.value = premiosATexto(RECOMPENSAS_ORIGINALES);
+  $editErr.textContent = "";
+});
+
+document.getElementById("editCancel").addEventListener("click", () => { audio.clic(); $edit.hidden = true; });
+$edit.addEventListener("click", e => { if (e.target === $edit) $edit.hidden = true; });
 
 const $mute = document.getElementById("mute");
 $mute.addEventListener("click", () => {
