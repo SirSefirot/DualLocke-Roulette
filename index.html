@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Recompensas Dual-Locke · Pokémon Añil</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bungee&family=Karla:wght@400;600;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="snow" id="snow" aria-hidden="true"></div>
+
+<header class="top">
+  <div class="garland" aria-hidden="true"></div>
+
+  <div class="bar">
+    <button id="home" class="home" title="Volver a la pantalla inicial">
+      <span>Recompensas Dual-Locke</span>
+      <small>Volver al inicio</small>
+    </button>
+    <div class="zoom-tip">
+      <span>Ajusta el tamaño con</span>
+      <kbd>Ctrl</kbd><span class="mas">+</span><kbd>+</kbd>
+      <span class="y">/</span>
+      <kbd>Ctrl</kbd><span class="mas">+</span><kbd>−</kbd>
+    </div>
+    <button id="mute" class="btn-ghost sm" title="Silenciar" aria-pressed="false">🔊</button>
+    <button id="help" class="btn-ghost sm" title="Qué hace cada premio">❓</button>
+  </div>
+
+  <div class="turn" id="turn">
+    <ul class="rules-list">
+      <li>Ambos jugadores reciben <b>2 capturas extras</b> por disputar el combate, al margen de las ruletas.</li>
+      <li>Los 18 premios se reparten al azar en 3 ruletas de 6. El Jackpot nunca comparte ruleta con un premio de tier Master Ball, y los dos Master Ball caen en ruletas distintas.</li>
+      <li>El ganador elige ruleta primero y la bloquea. El perdedor tira en una de las dos que quedan.</li>
+      <li>Quien saque <b>Jackpot</b> tira en la Jackpot Roulette. Si el premio no le sirve, hace reroll.</li>
+    </ul>
+  </div>
+</header>
+
+<section class="results" id="results" hidden>
+  <div class="result-cards" id="resultCards"></div>
+</section>
+
+<section class="lobby" id="lobby">
+  <div class="controls">
+    <div class="names">
+      <label>Ganador
+        <input id="winnerName" type="text" value="Ganador" maxlength="16" autocomplete="off">
+      </label>
+      <label>Perdedor
+        <input id="loserName" type="text" value="Perdedor" maxlength="16" autocomplete="off">
+      </label>
+    </div>
+    <button id="randomize" class="btn-main">Randomizar</button>
+  </div>
+
+  <div class="catalog" id="catalog"></div>
+</section>
+
+<main class="wheels" id="wheels" hidden></main>
+
+<!-- Explicación de los premios -->
+<div class="modal" id="helpModal" hidden>
+  <div class="modal-box help-box">
+    <h2>¿Qué hace cada premio?</h2>
+    <div class="help-grid" id="helpGrid"></div>
+    <button id="helpClose" class="btn-ghost">Cerrar</button>
+  </div>
+</div>
+
+<!-- Fuegos artificiales del jackpot -->
+<canvas id="fireworks" class="fireworks" hidden></canvas>
+
+<!-- Jackpot -->
+<div class="modal" id="jackpotModal" hidden>
+  <div class="modal-box jackpot-box">
+
+    <div id="jkChoice">
+      <h2 class="jk-title">¡JACKPOT!</h2>
+      <p class="bonus-sub" id="jkWho"></p>
+      <p class="jk-ask">Elige tu premio:</p>
+      <div class="jk-options">
+        <button class="jk-opt" id="jkReroll">
+          <span class="jk-ico">🔄</span>
+          <strong>Reroll</strong>
+          <small>Vuelves a tirar en la misma ruleta</small>
+        </button>
+        <button class="jk-opt gold" id="jkEgg">
+          <span class="jk-ico">🥚</span>
+          <strong>Huevo JACKPOT</strong>
+          <small>Un Ultraente o un Pokémon Paradoja al azar</small>
+        </button>
+      </div>
+    </div>
+
+    <div id="jkEggView" hidden>
+      <h2 class="jk-title">Huevo JACKPOT</h2>
+      <p class="bonus-sub" id="jkEggSub">Pulsa el huevo para abrirlo</p>
+
+      <div class="egg-stage">
+        <div class="egg-flash" id="eggFlash"></div>
+        <button class="egg" id="eggBtn" aria-label="Abrir el huevo">
+          <svg viewBox="0 0 120 150" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <radialGradient id="eggShade" cx="38%" cy="30%" r="75%">
+                <stop offset="0%" stop-color="#fffdf6"/>
+                <stop offset="65%" stop-color="#f3e9d2"/>
+                <stop offset="100%" stop-color="#cdbb98"/>
+              </radialGradient>
+            </defs>
+            <path id="eggShell" d="M60 4C86 4 114 52 114 92c0 31-24 54-54 54S6 123 6 92C6 52 34 4 60 4z"
+                  fill="url(#eggShade)" stroke="#8e7c58" stroke-width="3"/>
+            <g fill="#3fb27f" opacity=".92">
+              <ellipse cx="40" cy="62" rx="13" ry="10"/>
+              <ellipse cx="79" cy="88" rx="15" ry="11"/>
+              <ellipse cx="50" cy="110" rx="11" ry="8"/>
+              <ellipse cx="86" cy="45" rx="8" ry="6"/>
+              <ellipse cx="26" cy="98" rx="8" ry="6"/>
+            </g>
+            <path class="crack" d="M60 18 L50 46 L68 58 L52 82 L70 96 L56 124"
+                  fill="none" stroke="#5a4a2c" stroke-width="4" stroke-linejoin="round"/>
+          </svg>
+        </button>
+        <div class="egg-result" id="eggResult" hidden>
+          <img id="eggSprite" alt="">
+          <p id="eggName"></p>
+        </div>
+      </div>
+
+      <div class="pool" id="eggPool"></div>
+      <button id="jkClose" class="btn-ghost" hidden>Continuar</button>
+    </div>
+
+  </div>
+</div>
+
+<!-- Ruleta secundaria para premios aleatorios -->
+<div class="modal" id="bonusModal" hidden>
+  <div class="modal-box">
+    <h2 id="bonusTitle"></h2>
+    <p class="bonus-sub" id="bonusSub"></p>
+    <div class="bonus-body">
+      <div class="canvas-wrap bonus">
+        <div class="pointer"></div>
+        <canvas id="bonusCanvas" width="440" height="440"></canvas>
+      </div>
+      <ul class="bonus-list" id="bonusList"></ul>
+    </div>
+    <p class="bonus-result" id="bonusResult"></p>
+    <button id="bonusSpin" class="btn-main">Tirar</button>
+    <button id="bonusClose" class="btn-ghost" hidden>Continuar</button>
+  </div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
