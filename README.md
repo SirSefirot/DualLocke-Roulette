@@ -3,6 +3,7 @@
 
 Una ruleta para repartir premios después de los combates entre los dos jugadores de un
 Dual-Locke, en lugar de tirar de una ruleta improvisada de internet o de sortearlo a dedo.
+Pese a estar pensada para el Añil, cada premio es editable en la propia web.
 
 ![Pantalla inicial](docs/inicio.png)
 
