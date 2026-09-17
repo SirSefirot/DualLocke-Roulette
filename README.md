@@ -8,7 +8,8 @@ Dual-Locke, en lugar de tirar de una ruleta improvisada de internet o de sortear
 
 ## Para qué sirve
 
-En un Dual-Locke, cada combate entre los dos jugadores debería tener consecuencias.
+En un Dual-Locke, cada combate entre los dos jugadores debería tener premios, pero sin ventajas muy superiores para el ganador,
+puesto que este ya está un punto por encima en el marcador.
 Esta web coge una lista de premios, los reparte al azar en tres ruletas y monta el
 sorteo entero: el ganador del combate elige la ruleta que quiere tirar y la bloquea,
 y el perdedor tira en una de las dos que quedan. Los dos se llevan algo, pero el que
@@ -16,7 +17,7 @@ gana tiene ventaja porque elige primero y ve lo que hay en cada ruleta.
 
 ![Las tres ruletas repartidas](docs/ruletas.png)
 
-El reparto es limpio y comprobado: cada premio acaba en cada ruleta un tercio de las
+Cada premio acaba en cada ruleta un tercio de las
 veces exactamente. Hay dos únicas restricciones, para que ninguna ruleta se quede sin
 nada gordo: el Jackpot nunca comparte ruleta con un premio de Master Ball, y los dos
 Master Ball siempre caen en ruletas distintas.
